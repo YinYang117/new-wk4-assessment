@@ -119,8 +119,11 @@ describe("MagicShop", function () {
 		let sword = new Item("Excalibur", 900);
 
 		expect(shop.items).to.equal([]);
+		
 		shop.addItem(sword);
 		
+		expect(shop.items.length).to.equal(1);
+		expect(shop.items[0].name).to.equal("Excalibur");
 	});
 
 	it("can say hello to customers and list their items by name", function () {
@@ -148,7 +151,11 @@ describe("MagicShop", function () {
 
 	context("selling items", function () {
 		it("can sell items and remove them from the shop's array of items", function () {
-		
+			let adventurer = new Adventurer("Customer", 1, 1000)
+			shop = new MagicShop();
+			let sword = new Item("Excalibur", 900);
+			shop.addItem(sword);
+
 		});
 	
 		it("subtracts gold from the buyer when they purchase an item", function () {
@@ -161,3 +168,9 @@ describe("MagicShop", function () {
 	})
 
 });
+
+// Idea:
+// Change hero and adv to be the same.
+// Have normal items and magic items. magic inherits from normal
+// Can also change magic shop to be a treasure chest.
+// I'll look into this after I finish it as is for now.
