@@ -116,7 +116,7 @@ describe("Item", function () {
 });
 
 describe("MagicShop", function () {
-	it("should have an array of the items in the shop", function () {
+	it("should have an array of items", function () {
 		shop = new MagicShop();
 
 		expect(shop.items).to.equal([]);
@@ -140,61 +140,76 @@ describe("MagicShop", function () {
 
 		let sword = new Item("Excalibur", 900);
 		shop.addItem(sword);
-		
-		let shopGreeting1 = "Welcome! We have Excalibur for 900 gold."
+		expect(shop.items[0]).to.eql(sword);
+
+		let shopGreeting1 = "Welcome! We have Excalibur for 900 gold.";
 		expect(shop.greeting()).to.equal(shopGreeting1);
 
 		let shield = new Item("Triforce Shield", 1200);
 		shop.addItem(shield);
 
-		let shopGreeting2 = "Welcome! We have Excalibur for 900 gold, and Triforce Shield for 1200 gold."
+		let shopGreeting2 = "Welcome! We have Excalibur for 900 gold, and Triforce Shield for 1200 gold.";
 		expect(shop.greeting()).to.equal(shopGreeting2);
 
 		let bow = new Item("WindGale Bow", 400);
 		shop.addItem(bow);
 
-		let shopGreeting3 = "Welcome! We have Excalibur for 900 gold, Triforce Shield for 1200 gold, and WindGale Bow for 400 gold."
+		let shopGreeting3 = "Welcome! We have Excalibur for 900 gold, Triforce Shield for 1200 gold, and WindGale Bow for 400 gold.";
 		expect(shop.greeting()).to.equal(shopGreeting3);
 	})
 
-	context("selling items", function () {
-		it("can sell items and remove them from the shop's array of items", function () {
-			let adventurer = new Adventurer("Thanos");
-			adventurer.addGold(550);
+	context("selling items from the shop", function () {
+		it("has a static method that sell items from a shop", function () {
 			shop = new MagicShop();
-			let glove = new Item("Infinity Glove", 500);
+			let glove = new Item("Infinity Glove", 400);
 			shop.addItem(glove);
-			shop.sellItem("Infinity Glove", adventurer);
+			let adventurer = new Adventurer("Thanos");
+			adventurer.addGold(500);
+			expect(adventurer.items.length).to.equal(0);
+			expect(shop.items.length).to.equal(1)
+
+			MagicShop.sellItem(shop, adventurer, glove);
+
+			expect(adventurer.items.length).to.equal(1);
+			expect(adventurer.items).to.include(glove);
+			expect(shop.items).to.equal([]);
 		});
 	
 		it("subtracts gold from the buyer when they purchase an item", function () {
-			let adventurer = new Adventurer("Thanos")
-			adventurer.addGold(550);
 			shop = new MagicShop();
-			let glove = new Item("Infinity Glove", 500);
+			let glove = new Item("Infinity Glove", 400);
 			shop.addItem(glove);
-			shop.sellItem("Infinity Glove", adventurer);
-			expect(adventurer.gold).to.equal(50);
+			let hero = new Adventurer("Man of Iron");
+			hero.addGold(500);
+
+			MagicShop.sellItem(shop, hero, glove);
+
+			expect(hero.gold).to.equal(100);
 		});
 	
 		it("wont sell something if the buyer doesn't have enough gold", function () {
-			let adventurer = new Adventurer("Thanos")
+			let adventurer = new Adventurer("Link")
 			adventurer.addGold(400);
-			let adventurer2 = new Adventurer("Starlord")
-			adventurer2.addGold(100);
+			
 			shop = new MagicShop();
-			let glove = new Item("Infinity Glove", 500);
-			let tapeplayer = new Item("Old-Fashioned Tape Player", 150);
-			shop.addItem(glove);
-			shop.addItem(tapeplayer);
-			expect(() => shop.sellItem("Infinity Glove", adventurer)).to.throw(Error);
+			let boomerang = new Item("Boomerang", 500);
+			shop.addItem(boomerang);
+			
+			expect(() => MagicShop.sellItem(shop, adventurer, boomerang)).to.throw(Error);
 			try {
-				shop.sellItem("Infinity Glove", adventurer)
+				MagicShop.sellItem(shop, adventurer, boomerang)
 			} catch (error) {
-				expect(error.message).to.equal("Can not sell Infinity Glove, Thanos does not have enough gold.")
+				expect(error.message).to.equal("Can not sell Boomerang, Link does not have enough gold.")
 			}
+			
+			let hero = new Hero("Starlord")
+			hero.addGold(100);
+			let tapeplayer = new Item("Old-Fashioned Tape Player", 150);
+			shop.addItem(tapeplayer);
+
+			expect(() => MagicShop.sellItem(shop, hero, tapeplayer)).to.throw(Error);
 			try {
-				shop.sellItem("Old-Fashioned Tape Player", adventurer2)
+				MagicShop.sellItem(shop, hero, tapeplayer)
 			} catch (error) {
 				expect(error.message).to.equal("Can not sell Old-Fashioned Tape Player, Starlord does not have enough gold.")
 			}

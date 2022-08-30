@@ -1,7 +1,7 @@
-const Adventurer = require("./adventurer");
+const { Adventurer } = require("./adventurer");
 
 class Hero extends Adventurer{
-	constructor(name, level = 1){
+	constructor(name, level){
 		super(name, level)
 	}
 }
