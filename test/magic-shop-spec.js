@@ -7,50 +7,60 @@ const Item = require("../classes/item.js");
 
 
 describe("Adventurer", function () {
-	it("should have a name and level property. Level should default to 1.", function () {
+	it("should have a name and a level that defaults to 1.", function () {
 		let adventurer = new Adventurer("Parthanax");
 
 		expect(adventurer).to.have.property("name");
 		expect(adventurer).to.have.property("level");
 		expect(adventurer.name).to.equal("Parthanax");
 		expect(adventurer.level).to.equal(1);
-
+		
 		let adventurer2 = new Adventurer("Quill", 3);
-
+		
 		expect(adventurer2.name).to.equal("Quill");
 		expect(adventurer2.level).to.equal(3);
 	});
 
-	it("should have a gold property that starts at 0", function () {
+	it("should have a gold property that starts at 0 and an empty items array", function () {
 		let adventurer = new Adventurer("Parthanax");
 
-		expect(adventurer.name).to.equal("Parthanax");
 		expect(adventurer).to.have.property("gold");
+		expect(adventurer).to.have.property("items"); 
 		expect(adventurer.gold).to.equal(0);
+		expect(adventurer.items).to.equal([]);
+
+		let adventurer2 = new Adventurer("Quill", 3);
+		expect(adventurer2.gold).to.equal(0);
+		expect(adventurer2.items).to.equal([]);
 	});
 
-	it("should have a method to add and remove gold, with an error if subtracting would result in a negative number", function () {
-		let adventurer = new Adventurer("Robin Hood");
+	it("should have a methods to add and or subtract gold", function () {
+		let robin = new Adventurer("Robin Hood");
 
-		expect(adventurer.gold).to.equal(0);
+		expect(robin.gold).to.equal(0);
+		robin.addGold(100);
+		expect(robin.gold).to.equal(100);
+		robin.addGold(50);
+		expect(robin.gold).to.equal(150);
+		robin.subtractGold(25);
+		expect(robin.gold).to.equal(125);
+		robin.subtractGold(125);
+		expect(robin.gold).to.equal(0);
+	});
 
-		adventurer.addGold(100);
-		expect(adventurer.gold).to.equal(100);
+	it("should throw an error if subtracting gold would result in a negative number", function () {
+		let robin = new Adventurer("Robin Hood");
+		robin.addGold(10);
 
-		adventurer.subtractGold(25);
-		expect(adventurer.gold).to.equal(75);
-
-		adventurer.addGold(50);
-		expect(adventurer.gold).to.equal(125);
-
-		expect(() => adventurer.subtractGold(200)).to.throw(Error);
-		// adventurer.gold to equal 125 still
+		expect(() => robin.subtractGold(200)).to.throw(Error);
 		try {
-			adventurer.subtractGold(200)
+			robin.subtractGold(200)
 		} catch (error) {
-			expect(error.message).to.equal("Not enough gold to subtract")
+			expect(error.message).to.equal("Not enough gold to subtract.")
 		}
-	});
+
+		expect(robin.gold).to.equal(10);
+	})
 
 });
 
@@ -63,6 +73,7 @@ describe("Heros", function () {
 	});
 
 	it("should add 10 levels and 250 gold when created", function () {
+		//Maybe make levels change to 10 default instead of adding
 		let hero = new Hero("Leroy Jenkins", 2);
 
 		expect(hero.name).to.equal("Leroy Jenkins");
@@ -71,6 +82,8 @@ describe("Heros", function () {
 
 		hero.addGold(100);
 		expect(hero.gold).to.equal(350);
+		hero.subtractGold(500);
+		expect(() => hero.subtractGold(500)).to.throw(Error);
 	});
 
 });
@@ -92,9 +105,11 @@ describe("Item", function () {
 		expect(sword.onlySellToHeros).to.equal(false);
 
 		sword.toggleSellToHeros();
+
 		expect(sword.onlySellToHeros).to.equal(true);
 		
 		sword.toggleSellToHeros();
+
 		expect(sword.onlySellToHeros).to.equal(false);
 	});
 
