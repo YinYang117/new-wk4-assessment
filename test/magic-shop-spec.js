@@ -98,21 +98,6 @@ describe("Item", function () {
 		expect(shield.price).to.equal(300)
 	});
 
-	it("has a boolean property that toggles true / false with a function", function () {
-		let sword = new Item("Excalibur", 500)
-
-		expect(sword).to.have.property("onlySellToHeros");
-		expect(sword.onlySellToHeros).to.equal(false);
-
-		sword.toggleSellToHeros();
-
-		expect(sword.onlySellToHeros).to.equal(true);
-		
-		sword.toggleSellToHeros();
-
-		expect(sword.onlySellToHeros).to.equal(false);
-	});
-
 });
 
 describe("MagicShop", function () {
