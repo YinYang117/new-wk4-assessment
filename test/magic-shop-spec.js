@@ -1,40 +1,34 @@
 const { expect } = require("chai");
 
-const Adventurer = require("../classes/adventurer.js");
-const Hero = require("../classes/hero.js");
-const MagicShop = require("../classes/magicshop.js");
-const Item = require("../classes/item.js"); 
+const {Adventurer} = require("../classes/adventurer.js");
+const {Hero} = require("../classes/hero.js");
+const {MagicShop} = require("../classes/magicshop.js");
+const {Item} = require("../classes/item.js"); 
 
 
 describe("Adventurer", function () {
-	it("should have a name and a level that defaults to 1.", function () {
+	it("should have a name, a default level, gold, and items property.", function () {
 		let adventurer = new Adventurer("Parthanax");
 
 		expect(adventurer).to.have.property("name");
 		expect(adventurer).to.have.property("level");
-		expect(adventurer.name).to.equal("Parthanax");
-		expect(adventurer.level).to.equal(1);
-		
-		let adventurer2 = new Adventurer("Quill", 3);
-		
-		expect(adventurer2.name).to.equal("Quill");
-		expect(adventurer2.level).to.equal(3);
-	});
-
-	it("should have a gold property that starts at 0 and an empty items array", function () {
-		let adventurer = new Adventurer("Parthanax");
-
 		expect(adventurer).to.have.property("gold");
 		expect(adventurer).to.have.property("items"); 
-		expect(adventurer.gold).to.equal(0);
-		expect(adventurer.items).to.equal([]);
 
-		let adventurer2 = new Adventurer("Quill", 3);
+		expect(adventurer.name).to.equal("Parthanax");
+		expect(adventurer.level).to.equal(1);
+		expect(adventurer.gold).to.equal(0);
+		expect(adventurer.items).to.eql([]);
+		
+		let adventurer2 = new Adventurer("Quill", 30);
+		
+		expect(adventurer2.name).to.equal("Quill");
+		expect(adventurer2.level).to.equal(30);
 		expect(adventurer2.gold).to.equal(0);
-		expect(adventurer2.items).to.equal([]);
+		expect(adventurer2.items).to.eql([]);
 	});
 
-	it("should have a methods to add and or subtract gold", function () {
+	it("should have methods to add and subtract gold", function () {
 		let robin = new Adventurer("Robin Hood");
 
 		expect(robin.gold).to.equal(0);
@@ -48,7 +42,7 @@ describe("Adventurer", function () {
 		expect(robin.gold).to.equal(0);
 	});
 
-	it("should throw an error if subtracting gold would result in a negative number", function () {
+	it("should throw an error with a message if subtracting gold would result in a negative number", function () {
 		let robin = new Adventurer("Robin Hood");
 		robin.addGold(10);
 
@@ -72,18 +66,20 @@ describe("Heros", function () {
 		expect(hero instanceof Adventurer).to.be.true;
 	});
 
-	it("should add 10 levels and 250 gold when created", function () {
-		//Maybe make levels change to 10 default instead of adding
-		let hero = new Hero("Leroy Jenkins", 2);
+	it("should change default to level 10, and add 250 gold when created", function () {
+		let hero = new Hero("Leroy Jenkins");
 
 		expect(hero.name).to.equal("Leroy Jenkins");
-		expect(hero.level).to.equal(12);
+		expect(hero.level).to.equal(10);
 		expect(hero.gold).to.equal(250);
 
 		hero.addGold(100);
 		expect(hero.gold).to.equal(350);
-		hero.subtractGold(500);
+
 		expect(() => hero.subtractGold(500)).to.throw(Error);
+
+		let hero2 = new Hero("Mr MinMaxer", 99);
+		expect(hero2.level).to.equal(99);
 	});
 
 });
@@ -104,20 +100,19 @@ describe("MagicShop", function () {
 	it("should have an array of items", function () {
 		shop = new MagicShop();
 
-		expect(shop.items).to.equal([]);
+		expect(shop.items).to.eql([]);
 	});
 
 	it("can add items to the shop", function () {
 		shop = new MagicShop();
 		let sword = new Item("Excalibur", 900);
 
-		expect(shop.items).to.equal([]);
-		
 		shop.addItem(sword);
 		
 		expect(shop.items.length).to.equal(1);
+		expect(shop.items).to.include(sword);
 		expect(shop.items[0].name).to.equal("Excalibur");
-		expect(shop.items[0].price).to.equal(900)
+		expect(shop.items[0].price).to.equal(900);
 	});
 
 	it("has a greeting that lists their items and prices", function () {
@@ -127,19 +122,19 @@ describe("MagicShop", function () {
 		shop.addItem(sword);
 		expect(shop.items[0]).to.eql(sword);
 
-		let shopGreeting1 = "Welcome! We have Excalibur for 900 gold.";
+		let shopGreeting1 = "Welcome! We have many items for sale. Excalibur for 900 gold.";
 		expect(shop.greeting()).to.equal(shopGreeting1);
 
 		let shield = new Item("Triforce Shield", 1200);
 		shop.addItem(shield);
 
-		let shopGreeting2 = "Welcome! We have Excalibur for 900 gold, and Triforce Shield for 1200 gold.";
+		let shopGreeting2 = "Welcome! We have many items for sale. Excalibur for 900 gold. Triforce Shield for 1200 gold.";
 		expect(shop.greeting()).to.equal(shopGreeting2);
 
 		let bow = new Item("WindGale Bow", 400);
 		shop.addItem(bow);
 
-		let shopGreeting3 = "Welcome! We have Excalibur for 900 gold, Triforce Shield for 1200 gold, and WindGale Bow for 400 gold.";
+		let shopGreeting3 = "Welcome! We have many items for sale. Excalibur for 900 gold. Triforce Shield for 1200 gold. WindGale Bow for 400 gold.";
 		expect(shop.greeting()).to.equal(shopGreeting3);
 	})
 
@@ -147,17 +142,20 @@ describe("MagicShop", function () {
 		it("has a static method that sell items from a shop", function () {
 			shop = new MagicShop();
 			let glove = new Item("Infinity Glove", 400);
+			let filler = new Item("Fluff", 0)
+			let stuff = new Item("Stuff", 150)
+			shop.addItem(filler);
 			shop.addItem(glove);
+			shop.addItem(stuff);
+
 			let adventurer = new Adventurer("Thanos");
 			adventurer.addGold(500);
-			expect(adventurer.items.length).to.equal(0);
-			expect(shop.items.length).to.equal(1)
 
 			MagicShop.sellItem(shop, adventurer, glove);
 
 			expect(adventurer.items.length).to.equal(1);
 			expect(adventurer.items).to.include(glove);
-			expect(shop.items).to.equal([]);
+			expect(shop.items).to.include(filler, stuff);
 		});
 	
 		it("subtracts gold from the buyer when they purchase an item", function () {
@@ -172,7 +170,7 @@ describe("MagicShop", function () {
 			expect(hero.gold).to.equal(100);
 		});
 	
-		it("wont sell something if the buyer doesn't have enough gold", function () {
+		it("wont sell, and throws an error, if the buyer doesn't have enough gold", function () {
 			let adventurer = new Adventurer("Link")
 			adventurer.addGold(400);
 			
@@ -188,8 +186,7 @@ describe("MagicShop", function () {
 			}
 			
 			let hero = new Hero("Starlord")
-			hero.addGold(100);
-			let tapeplayer = new Item("Old-Fashioned Tape Player", 150);
+			let tapeplayer = new Item("Old-Fashioned Tape Player", 300);
 			shop.addItem(tapeplayer);
 
 			expect(() => MagicShop.sellItem(shop, hero, tapeplayer)).to.throw(Error);
@@ -200,11 +197,4 @@ describe("MagicShop", function () {
 			}
 		});
 	})
-
 });
-
-// Idea:
-// Change hero and adv to be the same.
-// Have normal items and magic items. magic inherits from normal
-// Can also change magic shop to be a treasure chest.
-// I'll look into this after I finish it as is for now.
